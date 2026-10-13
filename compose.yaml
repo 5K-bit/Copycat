@@ -1,0 +1,39 @@
+# Copycat — real Linux command sandbox.
+# Two disposable containers on one private network. Nothing from the host is mounted.
+name: copycat
+
+services:
+  kali:
+    build:
+      context: .                 # repo root, because the image needs seed/ and labs/ too
+      dockerfile: kali/Dockerfile
+    image: copycat/kali:latest
+    container_name: copycat-kali
+    hostname: copycat-kali
+    init: true
+    restart: "no"
+    ports:
+      - "127.0.0.1:2222:22"      # loopback only: reachable from this PC, not your LAN
+    networks: [copycat-net]
+    depends_on: [target]
+    pids_limit: 512              # fork bombs stay inside the box
+    mem_limit: 1g
+    cpus: 1.0
+    # No volumes, no privileged, no docker.sock, no host network. Default caps only.
+
+  target:
+    build: ./target
+    image: copycat/target:latest
+    container_name: copycat-target
+    hostname: copycat-target
+    init: true
+    restart: "no"
+    networks: [copycat-net]      # no published ports: only copycat-kali can reach it
+    pids_limit: 256
+    mem_limit: 256m
+    cpus: 0.5
+
+networks:
+  copycat-net:
+    name: copycat-net
+    driver: bridge

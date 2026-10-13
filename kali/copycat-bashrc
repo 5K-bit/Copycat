@@ -1,0 +1,61 @@
+
+# --- Copycat additions (everything above is stock Debian/Kali bash) ---
+case $- in *i*) ;; *) return 2>/dev/null ;; esac
+export HISTSIZE=5000
+export EDITOR=nano
+alias ll='ls -alF'
+
+# Prompt: a cat face that turns red when the last command failed.
+__cc_prompt() {
+  if [ $? -eq 0 ]; then __cc_face='=^.^='; __cc_col=32; else __cc_face='=^x^='; __cc_col=31; fi
+}
+PROMPT_COMMAND=__cc_prompt
+PS1='\[\e[1;${__cc_col}m\]${__cc_face}\[\e[0m\] \[\e[1;36m\]\u@copycat-kali\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ '
+
+# Typos: the cat suggests close matches among real commands.
+command_not_found_handle() {
+  local cmd=$1 guess=''
+  printf '( o.O ) meow? %s: command not found\n' "$cmd" >&2
+  case $cmd in ''|*/*) return 127 ;; esac
+  guess=$(compgen -c | sort -u | awk -v w="$cmd" '
+    function lev(a, b,   i, j, la, lb, d, c, m) {
+      la = length(a); lb = length(b)
+      for (i = 0; i <= la; i++) d[i, 0] = i
+      for (j = 0; j <= lb; j++) d[0, j] = j
+      for (i = 1; i <= la; i++) for (j = 1; j <= lb; j++) {
+        c = (substr(a, i, 1) == substr(b, j, 1)) ? 0 : 1
+        m = d[i-1, j] + 1
+        if (d[i, j-1] + 1 < m) m = d[i, j-1] + 1
+        if (d[i-1, j-1] + c < m) m = d[i-1, j-1] + c
+        d[i, j] = m
+      }
+      return d[la, lb]
+    }
+    BEGIN { max = (length(w) > 3) ? 2 : 1 }
+    { l = length($0) - length(w); if (l < -max || l > max) next
+      n = lev(w, $0); if (n <= max) print n, $0 }
+  ' | sort -n | head -3 | cut -d' ' -f2 | paste -sd' ')
+  [ -n "$guess" ] && printf '  did you mean: %s ?\n' "$guess" >&2
+  return 127
+}
+
+# Easter egg: a nervous cat before a very bad rm. It still runs; this is a sandbox.
+rm() {
+  local a
+  for a in "$@"; do
+    case $a in
+      /|/\*|--no-preserve-root)
+        local y='' r=''
+        [ -t 2 ] && [ -z "$NO_COLOR" ] && { y=$'\e[38;5;220m'; r=$'\e[0m'; }
+        printf '%s  /\\_/\\\n ( O.O )%s  uh... you sure about that?\n%s  > ~ <%s   (it is a sandbox. copycat-reset fixes it.)\n' "$y" "$r" "$y" "$r" >&2
+        break ;;
+    esac
+  done
+  command rm "$@"
+}
+
+# Tip of the day, once per login.
+if [ -t 1 ] && [ -z "$COPYCAT_TIP_SHOWN" ]; then
+  export COPYCAT_TIP_SHOWN=1
+  copysay
+fi

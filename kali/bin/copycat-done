@@ -1,0 +1,12 @@
+#!/bin/bash
+# copycat-done NN   mark a lab as finished (self-reported; nothing is checked)
+. /usr/local/lib/copycat/color.sh
+n=$1
+[ -n "$n" ] || { echo "usage: copycat-done NN   (see copycat-labs)"; exit 1; }
+d=$(cd "$HOME/labs" 2>/dev/null && ls -d "$n"-* 2>/dev/null | head -1)
+[ -n "$d" ] || { printf '%s( o.O )%s no lab "%s". Try copycat-labs.\n' "$C_YEL" "$C_RST" "$n"; exit 1; }
+f="$HOME/.copycat-progress"
+grep -qx "$d" "$f" 2>/dev/null || echo "$d" >> "$f"
+printf '%s  /\\_/\\%s   %slab complete: %s%s\n' "$C_GRN" "$C_RST" "$C_BOLD" "$d" "$C_RST"
+printf '%s ( ^.^ )%s  %s done. Nice work.\n' "$C_GRN" "$C_RST" "$(wc -l < "$f")"
+printf '%s  > w <%s\n' "$C_GRN" "$C_RST"

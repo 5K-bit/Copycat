@@ -1,0 +1,35 @@
+#!/bin/bash
+# copysay [text...]   a cat says something. No args: a random tip. Also reads stdin from a pipe.
+. /usr/local/lib/copycat/color.sh
+tips=(
+  "Tab completes commands and paths. Press it twice to see the options."
+  "Up arrow repeats your last command. Ctrl-R searches your history."
+  "man <command> is the manual. Press q to quit it."
+  "ls -la shows hidden files and permissions."
+  "Ctrl-C stops a running command. Ctrl-D closes the shell."
+  "Pipes chain commands:  ps aux | grep ssh"
+  "grep -rn word .  searches every file below here."
+  "find . -name '*.txt'  finds files by name."
+  "chmod and chown only make sense once you have read ls -l."
+  "tail -f /var/log/auth.log watches a log live."
+  "Broke something? That is the point. Run copycat-reset on your PC (not in here)."
+  "Two machines here: try ssh student@copycat-target"
+  "history | tail  shows what you just did."
+  "cd -  jumps back to the previous directory."
+)
+
+if [ $# -gt 0 ]; then msg="$*"
+elif [ ! -t 0 ]; then msg=$(cat)
+fi
+[ -n "$msg" ] || msg=${tips[RANDOM % ${#tips[@]}]}
+
+mapfile -t lines < <(printf '%s\n' "$msg" | fold -s -w 44 | sed 's/ *$//')
+w=0
+for l in "${lines[@]}"; do (( ${#l} > w )) && w=${#l}; done
+
+printf ' %s%s%s\n' "$C_CYAN" "$(printf '_%.0s' $(seq 1 $((w + 2))))" "$C_RST"
+for l in "${lines[@]}"; do
+  printf '%s<%s %s%-*s%s %s>%s\n' "$C_CYAN" "$C_RST" "$C_BOLD" "$w" "$l" "$C_RST" "$C_CYAN" "$C_RST"
+done
+printf ' %s%s%s\n' "$C_CYAN" "$(printf '%0.s-' $(seq 1 $((w + 2))))" "$C_RST"
+printf '%s   \\  /\\_/\\\n    \\( o.o )\n      > ^ <%s\n' "$C_PINK" "$C_RST"

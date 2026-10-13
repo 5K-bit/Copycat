@@ -1,0 +1,16 @@
+#!/bin/bash
+. /usr/local/lib/copycat/color.sh
+cd "$HOME/labs" 2>/dev/null || { echo "~/labs is gone. Time to reset!"; exit 1; }
+done_file="$HOME/.copycat-progress"
+printf '%s  /\\_/\\%s   %sLABS%s\n' "$C_PINK" "$C_RST" "$C_BOLD" "$C_RST"
+printf '%s ( o.o )%s  %s[x] = marked done with copycat-done NN%s\n' "$C_PINK" "$C_RST" "$C_DIM" "$C_RST"
+printf '%s  > ^ <%s\n\n' "$C_PINK" "$C_RST"
+for d in */; do
+  d=${d%/}; n=${d%%-*}; t=${d#*-}
+  if grep -qx "$d" "$done_file" 2>/dev/null; then
+    printf '[%sx%s] %s%s  %s%s\n' "$C_GRN" "$C_RST" "$C_GRN" "$n" "$t" "$C_RST"
+  else
+    printf '[ ] %s%s%s  %s\n' "$C_CYAN" "$n" "$C_RST" "$t"
+  fi
+done
+echo; echo "Open one:  cat ~/labs/01-core/README.md"

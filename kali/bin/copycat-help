@@ -1,0 +1,18 @@
+#!/bin/bash
+cat <<'TXT'
+COPYCAT — everything here is real Linux. These helpers only point you around.
+
+  copycat-labs     list the labs (exercises live in ~/labs/NN-name/README.md)
+  copycat-done NN  mark a lab finished (shows as [x] in copycat-labs)
+  copysay [text]   a cat gives you a tip (or says what you type)
+  copycat          reprint the banner
+
+Machines
+  copycat-kali     you are here        (user: copycat, password: copycat, sudo works)
+  copycat-target   ssh student@copycat-target   (password: student)  http://copycat-target
+
+Other users on this box: alex, sam, jordan (password: password)
+Break something? Run copycat-reset in a terminal on your PC (not in here).
+Leaving? copycat-stop on your PC keeps your changes; copycat-reset wipes them.
+Prompt: =^.^= green means the last command worked, =^x^= red means it failed.
+TXT
