@@ -1,17 +1,20 @@
 
-   /\_/\        /\_/\
-  ( o.o )  ->  ( o.o )
-   > ^ <        > ^ <
+    /\_/\            /\_/\
+   ( o.o )  ══════▶ ( o.o )      kali ──ssh──▶ target
+    > ^ <            > ^ <
 
-   ____ ___  ______   __  ____    _  _____
-  / ___/ _ \|  _ \ \ / / / ___|  / \|_   _|
- | |  | | | | |_) \ V / | |     / _ \ | |
- | |__| |_| |  __/ | |  | |___ / ___ \| |
-  \____\___/|_|    |_|   \____/_/   \_\_|
+ ██████╗ ██████╗ ██████╗ ██╗   ██╗ ██████╗ █████╗ ████████╗
+██╔════╝██╔═══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗╚══██╔══╝
+██║     ██║   ██║██████╔╝ ╚████╔╝ ██║     ███████║   ██║
+██║     ██║   ██║██╔═══╝   ╚██╔╝  ██║     ██╔══██║   ██║
+╚██████╗╚██████╔╝██║        ██║   ╚██████╗██║  ██║   ██║
+ ╚═════╝ ╚═════╝ ╚═╝        ╚═╝    ╚═════╝╚═╝  ╚═╝   ╚═╝
 
-       COPYCAT COMMAND SANDBOX
-       Real Linux. Break it. Reset it.
+ COPYCAT COMMAND SANDBOX
+ Real Linux. Break it. Reset it.
 
-  copycat-help   what's here        copycat-labs   list the labs
-  Other machine: ssh student@copycat-target   (password: student)
-
+ ┌─────────────────────────────────────────────────────────┐
+ │  copycat-help    what's here      copycat-labs   labs   │
+ │  copysay         a tip from the cat                     │
+ │  Other machine:  ssh student@copycat-target             │
+ └─────────────────────────────────────────────────────────┘
