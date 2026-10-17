@@ -2,6 +2,7 @@
 # Verifies the lab against the running containers. Needs only Docker on the host
 # (no sshpass): the SSH checks run from inside copycat-kali. Run after copycat-start.
 cd "$(dirname "$0")/.." || exit 1
+export MSYS_NO_PATHCONV=1   # Git Bash must not rewrite /home/... and /tmp/... arguments to docker.exe
 pass=0; fail=0
 check(){ local d=$1; shift; if "$@" >/dev/null 2>&1; then echo "  ok   $d"; pass=$((pass+1)); else echo "  FAIL $d"; fail=$((fail+1)); fi; }
 K="docker exec -u copycat copycat-kali"
