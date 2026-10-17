@@ -1,6 +1,6 @@
 #!/bin/bash
 . /usr/local/lib/copycat/color.sh
-cd "$HOME/labs" 2>/dev/null || { echo "~/labs is gone. Time to reset!"; exit 1; }
+cd "$HOME/labs" 2>/dev/null || { echo '~/labs is gone. Time to reset!'; exit 1; }
 done_file="$HOME/.copycat-progress"
 printf '%s  /\\_/\\%s   %sLABS%s\n' "$C_PINK" "$C_RST" "$C_BOLD" "$C_RST"
 printf '%s ( o.o )%s  %s[x] = marked done with copycat-done NN%s\n' "$C_PINK" "$C_RST" "$C_DIM" "$C_RST"

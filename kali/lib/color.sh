@@ -1,3 +1,4 @@
+# shellcheck shell=bash disable=SC2034
 # Source me. Sets C_* color vars when stdout is a terminal (or COPYCAT_FORCE_COLOR=1),
 # and leaves them empty when NO_COLOR is set or output is piped.
 if [ -z "$NO_COLOR" ] && { [ -t 1 ] || [ -n "$COPYCAT_FORCE_COLOR" ]; }; then
