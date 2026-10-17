@@ -57,5 +57,6 @@ rm() {
 # Tip of the day, once per login.
 if [ -t 1 ] && [ -z "$COPYCAT_TIP_SHOWN" ]; then
   export COPYCAT_TIP_SHOWN=1
+  copycat-panel
   copysay
 fi

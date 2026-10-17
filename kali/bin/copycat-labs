@@ -14,4 +14,10 @@ for d in */; do
     printf '[ ] %s%s%s  %s\n' "$C_CYAN" "$n" "$C_RST" "$t"
   fi
 done
-echo; echo "Open one:  cat ~/labs/01-core/README.md"
+lab_counts "$done_file"
+printf '\n%s %s/%s done\n' "$(draw_bar "$LAB_DONE" "$LAB_TOTAL")" "$LAB_DONE" "$LAB_TOTAL"
+if [ "$LAB_TOTAL" -gt 0 ] && [ "$LAB_DONE" -eq "$LAB_TOTAL" ]; then
+  printf '%s  /\\_/\\\n ( ^.^ )  every lab done. the cat is proud.\n  > ^ <%s\n' "$C_PINK" "$C_RST"
+else
+  echo "Open one:  cat ~/labs/01-core/README.md"
+fi
