@@ -24,6 +24,11 @@ check "tar/gzip/zip work"              $K bash -c "cd /tmp && tar czf t.tgz -C ~
 check "copycat helpers installed"      $K bash -c "command -v copycat-help copycat-labs copycat-done copysay"
 check "copycat-labs lists the labs"    $K bash -c "copycat-labs | grep -q 01"
 check "copycat-done records progress"  $K bash -c 'f=~/.copycat-progress; had=0; [ -e $f ] && cp $f /tmp/p.bak && had=1; copycat-done 01 && grep -q 01-core $f; r=$?; if [ $had = 1 ]; then cp /tmp/p.bak $f; else rm -f $f; fi; exit $r'
+check "graded lab fails before the fix"  $K bash -c "copycat-setup 06 >/dev/null && ! copycat-check 06"
+check "graded lab passes after the fix"  $K bash -c "f=\$HOME/labs/06-permissions/challenge/report.txt; echo copycat | sudo -S -p '' chown copycat:students \$f && echo copycat | sudo -S -p '' chmod 640 \$f && copycat-check 06"
+check "best score saved to SQLite"       $K bash -c "sqlite3 \$HOME/.copycat/progress.db \"select max(score) from results where lab='06'\" | grep -qx 100"
+check "copycat-labs shows the score"     $K bash -c "copycat-labs | grep -q 'graded: 100/100'"
+check "graded-lab test data cleaned up"  $K bash -c "rm -rf \$HOME/.copycat; echo copycat | sudo -S -p '' rm -rf \$HOME/labs/06-permissions/challenge"
 check "target resolves by hostname"    $K getent hosts copycat-target
 check "ping target"                    $K ping -c1 -W2 copycat-target
 check "curl target"                    $K curl -fsS http://copycat-target/files/numbers.txt
