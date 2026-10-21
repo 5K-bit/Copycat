@@ -6,12 +6,22 @@ done_file="$HOME/.copycat-progress"
 printf '%s  /\\_/\\%s   %sLABS%s\n' "$C_PINK" "$C_RST" "$C_BOLD" "$C_RST"
 printf '%s ( o.o )%s  %s[x] = marked done with copycat-done NN%s\n' "$C_PINK" "$C_RST" "$C_DIM" "$C_RST"
 printf '%s  > ^ <%s\n\n' "$C_PINK" "$C_RST"
+db="$HOME/.copycat/progress.db"
 for d in */; do
   d=${d%/}; n=${d%%-*}; t=${d#*-}
-  if grep -qx "$d" "$done_file" 2>/dev/null; then
-    printf '[%sx%s] %s%s  %s%s\n' "$C_GRN" "$C_RST" "$C_GRN" "$n" "$t" "$C_RST"
+  # Graded labs (copycat-check) show their best score; ungraded ones use copycat-done.
+  tag=''; best=''
+  if [ -d "/usr/local/lib/copycat/grading/$d" ]; then
+    case $n in *[!0-9]*|'') ;; *)
+      [ -f "$db" ] && best=$(sqlite3 "$db" "SELECT MAX(score) FROM results WHERE lab='$n'" 2>/dev/null) ;;
+    esac
+    tag="  ${C_DIM}[graded${best:+: $best/100}]${C_RST}"
+  fi
+  if [ "$best" = 100 ] || grep -qx "$d" "$done_file" 2>/dev/null; then
+    printf '[%sx%s] %s%s  %s%s%s\n' "$C_GRN" "$C_RST" "$C_GRN" "$n" "$t" "$C_RST" "$tag"
   else
-    printf '[ ] %s%s%s  %s\n' "$C_CYAN" "$n" "$C_RST" "$t"
+    printf '[ ] %s%s%s  %s%s\n' "$C_CYAN" "$n" "$C_RST" "$t" "$tag"
   fi
 done
 echo; echo "Open one:  cat ~/labs/01-core/README.md"
+echo "Graded labs:  copycat-setup NN, fix it, then copycat-check NN"

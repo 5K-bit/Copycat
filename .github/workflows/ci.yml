@@ -12,8 +12,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: shellcheck
         run: |
-          shellcheck -S warning scripts/*.sh kali/entrypoint.sh kali/lib/color.sh \
-            kali/bin/* seed/generate.sh
+          shellcheck -S warning scripts/*.sh kali/entrypoint.sh kali/lib/color.sh kali/lib/grade.sh \
+            kali/bin/* seed/generate.sh grading/*/*.sh
       - name: compose config
         run: docker compose config -q
 

@@ -65,7 +65,23 @@ Numbers: r=4, w=2, x=1, so `6` is `rw-`, `5` is `r-x`, `7` is `rwx`.
 Make a new file readable and writable by you only (`rw-------`) using the numeric form, then
 again using symbolic form (`chmod u=rw,go=`).
 
+## Graded challenge: repair a locked file
+Copycat breaks a file on purpose, you investigate and fix it, then it checks your work.
+```
+copycat-setup 06
+cat ~/labs/06-permissions/challenge/report.txt     # denied. why?
+ls -l ~/labs/06-permissions/challenge; id; groups; stat ~/labs/06-permissions/challenge/report.txt
+```
+The brief printed by `copycat-setup` lists the target state. Fix it (you will need `sudo`,
+password `copycat`), then grade it:
+```
+copycat-check 06
+```
+You get a PASS/FAIL line per area and a score out of 100. Results are saved, and
+`copycat-labs` shows your best score. Run `copycat-setup 06` again to break it afresh.
+
 ## Done
+Finish the graded challenge (score 100), or mark the lab yourself:
 ```
 copycat-done 06
 ```

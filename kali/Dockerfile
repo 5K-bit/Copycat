@@ -12,7 +12,7 @@ RUN rm -f /etc/dpkg/dpkg.cfg.d/docker /etc/dpkg/dpkg.cfg.d/excludes \
       iputils-ping iproute2 net-tools traceroute bind9-dnsutils \
       curl wget rsync sshpass \
       zip unzip tar gzip bzip2 xz-utils \
-      bsdextrautils ncal diffutils findutils \
+      bsdextrautils ncal diffutils findutils sqlite3 \
  && apt-get clean && rm -rf /var/lib/apt/lists/* \
  && mandb -q || true
 
@@ -40,7 +40,15 @@ COPY labs/ /tmp/labs/
 RUN bash /tmp/generate.sh /home/copycat /tmp/labs && rm -rf /tmp/generate.sh /tmp/labs \
  && updatedb
 
-COPY kali/lib/color.sh /usr/local/lib/copycat/color.sh
+COPY kali/lib/color.sh kali/lib/grade.sh /usr/local/lib/copycat/
+# Graded-lab checks and their setup scripts live outside ~/labs so the answers are not on the
+# student's path. Root owns them; sudoers lets the student run only the setup scripts (as root),
+# because they deliberately break things (root-owned files and so on).
+COPY grading/ /usr/local/lib/copycat/grading/
+RUN find /usr/local/lib/copycat/grading -name '*.sh' -exec chmod 755 {} + \
+ && printf '%s\n' 'copycat ALL=(root) NOPASSWD: /usr/local/lib/copycat/grading/*/setup.sh' \
+      > /etc/sudoers.d/copycat-grading \
+ && chmod 440 /etc/sudoers.d/copycat-grading
 COPY kali/motd /usr/local/share/copycat/motd.txt
 COPY kali/copycat-bashrc /tmp/copycat-bashrc
 RUN cat /tmp/copycat-bashrc >> /home/copycat/.bashrc && rm /tmp/copycat-bashrc

@@ -1,0 +1,11 @@
+#!/bin/bash
+# copycat-check NN   grade a lab challenge (set it up first with: copycat-setup NN)
+. /usr/local/lib/copycat/color.sh
+n=$1
+[ -n "$n" ] || { echo "usage: copycat-check NN   (graded labs are marked in copycat-labs)"; exit 1; }
+d=$(cd /usr/local/lib/copycat/grading 2>/dev/null && ls -d "$n"-* 2>/dev/null | head -1)
+if [ -z "$d" ]; then
+  printf '%slab %s has no automated check.%s Use: copycat-done %s\n' "$C_YEL" "$n" "$C_RST" "$n"
+  exit 1
+fi
+exec bash "/usr/local/lib/copycat/grading/$d/check.sh"
