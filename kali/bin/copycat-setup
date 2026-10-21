@@ -1,0 +1,12 @@
+#!/bin/bash
+# copycat-setup NN   (re)create the broken thing a graded lab asks you to fix
+. /usr/local/lib/copycat/color.sh
+n=$1
+[ -n "$n" ] || { echo "usage: copycat-setup NN   (graded labs are marked in copycat-labs)"; exit 1; }
+d=$(cd /usr/local/lib/copycat/grading 2>/dev/null && ls -d "$n"-* 2>/dev/null | head -1)
+if [ -z "$d" ]; then
+  printf '%slab %s has no challenge to set up.%s\n' "$C_YEL" "$n" "$C_RST"
+  exit 1
+fi
+# The scripts run as root (they create deliberately broken files); sudoers allows exactly these.
+exec sudo -n "/usr/local/lib/copycat/grading/$d/setup.sh"
