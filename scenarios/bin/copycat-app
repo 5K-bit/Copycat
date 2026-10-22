@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+# A tiny pretend application for the troubleshooting scenarios: answers every HTTP request with
+# "copycat app ok". Reads /etc/copycat-app.conf (PORT, LOGDIR) and logs to LOGDIR/app.log.
+use strict; use warnings;
+use IO::Socket::INET;
+
+my %c = (PORT => 8080, LOGDIR => '/var/log/copycat-app');
+if (open my $fh, '<', '/etc/copycat-app.conf') {
+    while (<$fh>) { $c{$1} = $2 if /^\s*([A-Z]+)\s*=\s*(\S+)/ }
+    close $fh;
+}
+my $log = "$c{LOGDIR}/app.log";
+open my $lf, '>>', $log or do {
+    open my $ef, '>>', '/var/log/copycat-app.err';
+    print $ef scalar(localtime) . " copycat-app: cannot write log file $log: $!\n";
+    exit 1;
+};
+select((select($lf), $| = 1)[0]);
+my $srv = IO::Socket::INET->new(LocalPort => $c{PORT}, Listen => 5, ReuseAddr => 1, Proto => 'tcp') or do {
+    print $lf scalar(localtime) . " cannot listen on port $c{PORT}: $!\n"; exit 1;
+};
+print $lf scalar(localtime) . " listening on port $c{PORT}\n";
+while (my $cl = $srv->accept) {
+    my $req = <$cl>;
+    print $lf scalar(localtime) . " " . ($req // '-');
+    print $cl "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\n\r\ncopycat app ok\n";
+    close $cl;
+}

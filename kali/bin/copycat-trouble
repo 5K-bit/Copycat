@@ -1,0 +1,60 @@
+#!/bin/bash
+# copycat-trouble: troubleshooting mode. Copycat breaks something real, you investigate.
+#   copycat-trouble list                 the scenarios
+#   copycat-trouble start [NAME|random]  break something and show the symptom
+#   copycat-trouble hint                 a nudge (run again for a bigger one)
+#   copycat-trouble check                grade your fix (PASS/FAIL, score saved)
+#   copycat-trouble reveal               explain the cause and the fix (gives up the challenge)
+#   copycat-trouble reset                put everything back
+. /usr/local/lib/copycat/color.sh
+dir=/usr/local/lib/copycat/scenarios
+state="$HOME/.copycat/trouble.current"
+cmd=${1:-}; arg=${2:-}
+
+names() { (cd "$dir" 2>/dev/null && for f in *.sh; do echo "${f%.sh}"; done); }
+load() { # shellcheck disable=SC1090
+  . "$dir/$1.sh"; }
+current() { [ -f "$state" ] && cat "$state"; }
+need_current() {
+  cur=$(current) || { printf '%sNo scenario running. Start one: copycat-trouble start random%s\n' "$C_YEL" "$C_RST"; exit 1; }
+}
+run_root() { sudo -n /usr/local/lib/copycat/trouble-run.sh "$@"; }
+
+case $cmd in
+  list)
+    printf '%sTROUBLESHOOTING SCENARIOS%s\n\n' "$C_BOLD" "$C_RST"
+    for n in $(names); do
+      ( load "$n"; printf '  %-20s %s\n' "$n" "$S_QUESTION" )
+    done
+    printf '\nStart one:  copycat-trouble start NAME    (or: random)\n' ;;
+  start)
+    all=$(names)
+    if [ -z "$arg" ] || [ "$arg" = random ]; then arg=$(echo "$all" | shuf -n1); fi
+    echo "$all" | grep -qx "$arg" || { echo "unknown scenario: $arg   (copycat-trouble list)"; exit 1; }
+    if [ -n "$(current)" ]; then run_root reset "$(current)" >/dev/null 2>&1; fi
+    run_root break "$arg" >/dev/null || { echo "could not set up $arg"; exit 1; }
+    mkdir -p "$HOME/.copycat"; echo "$arg" > "$state"; rm -f "$HOME/.copycat/trouble.hints"
+    load "$arg"
+    printf '%sTROUBLESHOOTING%s  %s\n\n' "$C_BOLD" "$C_RST" "$S_QUESTION"
+    s_symptom
+    printf '\n%sInvestigate, fix it, then run: copycat-trouble check%s\n' "$C_DIM" "$C_RST" ;;
+  hint)
+    need_current; load "$cur"
+    n=$(cat "$HOME/.copycat/trouble.hints" 2>/dev/null || echo 0); n=$((n + 1)); echo "$n" > "$HOME/.copycat/trouble.hints"
+    if [ "$n" -eq 1 ]; then s_hint1; else s_hint2; fi ;;
+  check)
+    need_current; load "$cur"
+    . /usr/local/lib/copycat/grade.sh
+    grade_start "T-$cur" "$S_TITLE"
+    s_verify
+    grade_finish ;;
+  reveal)
+    need_current; load "$cur"
+    s_reveal ;;
+  reset)
+    need_current
+    run_root reset "$cur" >/dev/null && rm -f "$state" "$HOME/.copycat/trouble.hints"
+    printf '%sScenario %s reset.%s\n' "$C_GRN" "$cur" "$C_RST" ;;
+  *)
+    sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//' ;;
+esac

@@ -29,6 +29,20 @@ check "graded lab passes after the fix"  $K bash -c "f=\$HOME/labs/06-permission
 check "best score saved to SQLite"       $K bash -c "sqlite3 \$HOME/.copycat/progress.db \"select max(score) from results where lab='06'\" | grep -qx 100"
 check "copycat-labs shows the score"     $K bash -c "copycat-labs | grep -q 'graded: 100/100'"
 check "graded-lab test data cleaned up"  $K bash -c "rm -rf \$HOME/.copycat; echo copycat | sudo -S -p '' rm -rf \$HOME/labs/06-permissions/challenge"
+check "students cannot sudo the fix action"  $K bash -c "! sudo -n /usr/local/lib/copycat/trouble-run.sh fix broken-dns"
+check "copycat-trouble lists 8 scenarios"    $K bash -c "[ \$(copycat-trouble list | grep -c '^  [a-z]') -eq 8 ]"
+for s in broken-ssh missing-permissions full-disk broken-dns failed-service cpu-overload wrong-ownership failed-backup; do
+  check "trouble $s: broken after start"   $K bash -c "copycat-trouble start $s >/dev/null && ! copycat-trouble check"
+  check "trouble $s: passes once fixed"    bash -c "docker exec -u root copycat-kali /usr/local/lib/copycat/trouble-run.sh fix $s && docker exec -u copycat copycat-kali copycat-trouble check"
+  check "trouble $s: reset"                $K copycat-trouble reset
+done
+check "trouble data cleaned up"          $K bash -c "rm -rf \$HOME/.copycat"
+for n in 24 29 31 33 34 35 36 37 38 39 40; do
+  check "lab $n: broken right after copycat-setup"  $K bash -c "copycat-setup $n >/dev/null && ! copycat-check $n"
+  check "lab $n: passes once solved"  bash -c "docker cp tests/solutions/$n.sh copycat-kali:/tmp/solution.sh && docker exec -u root copycat-kali bash /tmp/solution.sh && docker exec -u copycat copycat-kali copycat-check $n"
+done
+check "copycat-labs shows 40 labs"        $K bash -c "[ \$(copycat-labs | grep -c '^\[.\] ') -eq 40 ]"
+check "graded-lab data cleaned up"        $K bash -c "rm -rf \$HOME/.copycat; echo copycat | sudo -S -p '' rm -rf /srv/lab24 /srv/hardening /srv/interns; echo copycat | sudo -S -p '' userdel -r taylor; echo copycat | sudo -S -p '' userdel -r guest; true"
 check "target resolves by hostname"    $K getent hosts copycat-target
 check "ping target"                    $K ping -c1 -W2 copycat-target
 check "curl target"                    $K curl -fsS http://copycat-target/files/numbers.txt
