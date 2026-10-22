@@ -19,6 +19,8 @@ services:
     pids_limit: 512              # fork bombs stay inside the box
     mem_limit: 1g
     cpus: 1.0
+    tmpfs:
+      - /mnt/smalldisk:size=8m,mode=1777   # a tiny RAM-backed "disk" for the full-disk scenario
     # No volumes, no privileged, no docker.sock, no host network. Default caps only.
 
   target:

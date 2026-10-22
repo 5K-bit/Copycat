@@ -1,0 +1,74 @@
+#!/usr/bin/perl
+# fwsim RULES PACKETS   a tiny firewall simulator for lab 33 (containers cannot run real iptables).
+#
+# RULES: iptables-save style, INPUT chain only. Supported:
+#   -P INPUT ACCEPT|DROP
+#   -A INPUT [-p tcp|udp|icmp|all] [-s CIDR] [-d CIDR] [--sport N[:M]] [--dport N[:M]]
+#            [-m state --state NEW,ESTABLISHED,RELATED] [-m conntrack --ctstate ...] -j ACCEPT|DROP|REJECT
+# PACKETS: one per line:  PROTO SRC DST DPORT [SPORT] [state=NEW|ESTABLISHED]   (# starts a comment)
+# Output:  the packet, then the verdict (ACCEPT or DROP) and the rule number that decided (or "policy").
+use strict; use warnings;
+
+die "usage: fwsim RULES PACKETS\n" unless @ARGV == 2;
+my ($rf, $pf) = @ARGV;
+
+sub ip2n { my @o = split /\./, shift; return ($o[0] << 24) | ($o[1] << 16) | ($o[2] << 8) | $o[3] }
+sub in_cidr {
+    my ($ip, $cidr) = @_;
+    my ($net, $bits) = split m{/}, $cidr; $bits = 32 unless defined $bits;
+    my $mask = $bits == 0 ? 0 : (0xFFFFFFFF << (32 - $bits)) & 0xFFFFFFFF;
+    return ((ip2n($ip) & $mask) == (ip2n($net) & $mask));
+}
+sub in_ports {
+    my ($p, $spec) = @_;
+    my ($lo, $hi) = split /:/, $spec; $hi = $lo unless defined $hi;
+    return $p >= $lo && $p <= $hi;
+}
+
+my $policy = 'ACCEPT'; my @rules;
+open my $R, '<', $rf or die "cannot read $rf: $!\n";
+while (<$R>) {
+    s/#.*//; s/^\s+|\s+$//g; next unless length;
+    if (/^-P\s+INPUT\s+(ACCEPT|DROP)$/) { $policy = $1; next }
+    next unless /^-A\s+INPUT\s+(.*)$/;
+    my @t = split ' ', $1; my %r = (src => undef);
+    while (@t) {
+        my $o = shift @t;
+        if ($o eq '-p') { $r{proto} = shift @t }
+        elsif ($o eq '-s') { $r{src} = shift @t }
+        elsif ($o eq '-d') { $r{dst} = shift @t }
+        elsif ($o eq '--dport') { $r{dport} = shift @t }
+        elsif ($o eq '--sport') { $r{sport} = shift @t }
+        elsif ($o eq '-m') { shift @t }
+        elsif ($o eq '--state' || $o eq '--ctstate') { $r{state} = { map { $_ => 1 } split /,/, shift @t } }
+        elsif ($o eq '-j') { $r{target} = shift @t }
+        else { die "fwsim: unsupported option '$o' in rule: $_\n" }
+    }
+    die "fwsim: rule without -j: $_\n" unless $r{target};
+    push @rules, \%r;
+}
+close $R;
+
+open my $P, '<', $pf or die "cannot read $pf: $!\n";
+while (my $line = <$P>) {
+    $line =~ s/#.*//; $line =~ s/^\s+|\s+$//g; next unless length $line;
+    my @f = split ' ', $line; my %p = (state => 'NEW', sport => 40000);
+    for my $x (@f) { if ($x =~ /^state=(\w+)$/) { $p{state} = uc $1 } }
+    @f = grep { !/^state=/ } @f;
+    @p{qw(proto src dst dport)} = @f[0..3]; $p{sport} = $f[4] if defined $f[4];
+    my ($verdict, $why) = ($policy, 'policy');
+    my $n = 0;
+    RULE: for my $r (@rules) {
+        $n++;
+        next if defined $r->{proto} && $r->{proto} ne 'all' && lc $r->{proto} ne lc $p{proto};
+        next if defined $r->{src} && !in_cidr($p{src}, $r->{src});
+        next if defined $r->{dst} && !in_cidr($p{dst}, $r->{dst});
+        next if defined $r->{dport} && !($p{proto} =~ /^(tcp|udp)$/i && in_ports($p{dport}, $r->{dport}));
+        next if defined $r->{sport} && !($p{proto} =~ /^(tcp|udp)$/i && in_ports($p{sport}, $r->{sport}));
+        next if $r->{state} && !$r->{state}{ $p{state} };
+        $verdict = $r->{target} eq 'ACCEPT' ? 'ACCEPT' : 'DROP'; $why = "rule $n"; last RULE;
+    }
+    printf "%-7s %-6s %-15s -> %-15s dport %-5s %-12s %s (%s)\n",
+        $verdict, $p{proto}, $p{src}, $p{dst}, $p{dport}, "[$p{state}]", '', $why;
+}
+close $P;

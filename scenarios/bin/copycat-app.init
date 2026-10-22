@@ -1,0 +1,20 @@
+#!/bin/sh
+# /etc/init.d/copycat-app  start|stop|restart|status   (a real SysV-style init script)
+PIDFILE=/run/copycat-app.pid
+DAEMON=/usr/local/bin/copycat-app
+case "$1" in
+  start)
+    if start-stop-daemon --status --pidfile "$PIDFILE" 2>/dev/null; then echo "copycat-app is already running"; exit 0; fi
+    start-stop-daemon --start --background --make-pidfile --pidfile "$PIDFILE" --exec "$DAEMON"
+    sleep 1
+    if start-stop-daemon --status --pidfile "$PIDFILE" 2>/dev/null; then echo "copycat-app started"
+    else echo "copycat-app failed to start (see /var/log/copycat-app.err and the app log)"; rm -f "$PIDFILE"; exit 1; fi ;;
+  stop)
+    start-stop-daemon --stop --pidfile "$PIDFILE" --retry 3 2>/dev/null
+    rm -f "$PIDFILE"; echo "copycat-app stopped" ;;
+  restart) "$0" stop; "$0" start ;;
+  status)
+    if start-stop-daemon --status --pidfile "$PIDFILE" 2>/dev/null; then echo "copycat-app is running"; exit 0
+    else echo "copycat-app is not running"; exit 3; fi ;;
+  *) echo "usage: $0 start|stop|restart|status"; exit 2 ;;
+esac
