@@ -20,7 +20,7 @@
 ![Docker](https://img.shields.io/badge/docker-compose-2496ED?logo=docker&logoColor=white)
 ![Kali Linux](https://img.shields.io/badge/kali-rolling-557C94?logo=kalilinux&logoColor=white)
 ![Shell](https://img.shields.io/badge/shell-bash-4EAA25?logo=gnubash&logoColor=white)
-![Labs](https://img.shields.io/badge/labs-20-ff69b4)
+![Labs](https://img.shields.io/badge/labs-40-ff69b4)
 
 </div>
 
@@ -36,7 +36,9 @@ It's built for learning the way sysadmins and security engineers actually learn:
 
 - **Real shell, real consequences.** Kali Linux with `bash`, `sudo`, `apt`, `man`, `cron`, `rsyslog` and a seeded home directory to explore.
 - **Two-machine network.** `copycat-kali` plus an Alpine `copycat-target` running sshd and HTTP, reachable only from the Kali box. Practice `ssh`, `scp`, `rsync`, `curl` and recon against a live host.
-- **20 guided labs.** Each has steps, a self-check and a challenge, with progress tracked in-shell (`copycat-labs`, `copycat-done NN`).
+- **40 guided labs.** Each has steps, a self-check and a challenge, with progress tracked in-shell (`copycat-labs`, `copycat-done NN`).
+- **Automated grading.** 12 labs break something real and score your fix out of 100 with `copycat-check`. Best scores are saved to a local SQLite database and shown in `copycat-labs`.
+- **Troubleshooting mode.** `copycat-trouble` breaks something real (SSH, permissions, a full disk, DNS, a service, CPU, ownership, a backup) and grades how you diagnose and fix it.
 - **Safe by construction.** No volumes, no host mounts, no Docker socket, not privileged, SSH bound to loopback only. See [Safety model](#safety-model).
 - **One-command lifecycle.** `copycat-start`, `copycat-stop`, `copycat-reset`, plus a `copycat-selftest` that verifies the whole environment.
 - **Cross-platform.** PowerShell launchers for Windows, shell scripts for Linux, macOS and WSL.
@@ -74,13 +76,13 @@ The launchers live in `bin\` and call the scripts in `scripts\`, which you can a
 | `copycat-kali` | `copycat` / `copycat` | non-root, in `sudo` (password required). Others: `alex`, `sam`, `jordan` / `password` |
 | `copycat-target` | `student` / `student` | from Kali: `ssh student@copycat-target`, `curl http://copycat-target` |
 
-Inside the sandbox: `copycat-help`, `copycat-labs` (progress list), `copycat-done NN` (mark a lab finished), `copysay` (a tip from the cat).
+Inside the sandbox: `copycat-help`, `copycat-labs` (progress list), `copycat-done NN` (mark a lab finished), `copycat-setup NN` / `copycat-check NN` (graded labs), `copycat-trouble` (troubleshooting mode), `copysay` (a tip from the cat).
 
 > These credentials are deliberately simple training defaults for a sandbox bound to `127.0.0.1`. Don't reuse them anywhere real.
 
 ## Labs
 
-Exercises are plain READMEs in `~/labs/NN-name/`, about 5 hours in total.
+Exercises are plain READMEs in `~/labs/NN-name/`, about 14 hours in total. Labs 01-20 cover the command-line fundamentals; labs 21-40 go deeper into system administration and troubleshooting.
 
 | # | Lab | # | Lab |
 |---|---|---|---|
@@ -95,6 +97,44 @@ Exercises are plain READMEs in `~/labs/NN-name/`, about 5 hours in total.
 | 09 | Networking | 19 | Shell scripting |
 | 10 | SSH | 20 | Text editors |
 
+**Labs 21-40.** Labs marked ✔ are graded: run `copycat-setup NN` to break something, fix it, then `copycat-check NN`. Lab 06 (Permissions) is graded too.
+
+| # | Lab | Time | Graded |
+|---|---|---|---|
+| 21 | The Linux filesystem hierarchy | ~20 min | |
+| 22 | Environment variables and `$PATH` | ~20 min | |
+| 23 | Symbolic and hard links | ~20 min | |
+| 24 | Advanced file permissions | ~35 min | ✔ |
+| 25 | The Linux boot process | ~25 min | |
+| 26 | System services | ~25 min | |
+| 27 | DNS troubleshooting | ~25 min | |
+| 28 | Storage: filesystems, partitions, mounts and swap | ~30 min | |
+| 29 | SSH authentication | ~30 min | ✔ |
+| 30 | System performance | ~25 min | |
+| 31 | User administration | ~30 min | ✔ |
+| 32 | Service troubleshooting | ~30 min | |
+| 33 | Firewall administration | ~35 min | ✔ |
+| 34 | Backup and recovery | ~30 min | ✔ |
+| 35 | Scheduled automation with cron | ~30 min | ✔ |
+| 36 | Package troubleshooting | ~30 min | ✔ |
+| 37 | Git fundamentals | ~35 min | ✔ |
+| 38 | Bash automation | ~40 min | ✔ |
+| 39 | Linux hardening | ~35 min | ✔ |
+| 40 | System recovery | ~40 min | ✔ |
+
+## Troubleshooting mode
+
+```
+copycat-trouble list                  # the scenarios
+copycat-trouble start [NAME|random]   # break something and show the symptom
+copycat-trouble hint                  # a nudge (run again for a bigger one)
+copycat-trouble check                 # grade your fix (PASS/FAIL, score saved)
+copycat-trouble reveal                # explain the cause and the fix
+copycat-trouble reset                 # put everything back
+```
+
+Scenarios: `broken-ssh`, `missing-permissions`, `full-disk`, `broken-dns`, `failed-service`, `cpu-overload`, `wrong-ownership`, `failed-backup`. Scores go to the same SQLite database as `copycat-check`.
+
 ## Safety model
 
 No volumes or host mounts, no Docker socket, not privileged, no host network, default capabilities, pid/memory/CPU limits, SSH bound to loopback only. Reset touches only the `copycat` compose project, so your other containers are never affected. To report a security issue, see [SECURITY.md](SECURITY.md).
@@ -104,10 +144,11 @@ No volumes or host mounts, no Docker socket, not privileged, no host network, de
 Copycat doesn't fake Linux, so some things are out of scope by design:
 
 - No systemd, so `hostnamectl`/`systemctl` aren't meaningful. `service ssh|cron|rsyslog status` is real.
-- `lspci`, `lsusb`, `dmidecode`, `mount`, `iptables`, `ufw` aren't in v1 (hardware / extra capabilities). They belong in a later isolated `copycat-system` container.
+- `lspci`, `lsusb`, `dmidecode`, `mount`, `iptables`, `ufw` aren't available (hardware / extra capabilities). The firewall lab (33) uses a small simulator, `fwsim`, because containers run without `NET_ADMIN`; a real firewall belongs in a later isolated `copycat-system` container.
+- The package lab (36) installs from an offline repository built at image build time, so it works without the Internet.
 - `pacman`, `rpm`, `dnf` need their own distros (planned `copycat-arch`, `copycat-rpm`).
 - The container is online (apt/wget to the Internet work). An isolated mode is a later phase: Docker can't publish SSH to the host from a network-less container, so it needs a small gateway design.
-- Host SSH keys are baked in at build, so resets don't trigger "host key changed" warnings; `-Rebuild` will.
+- Host SSH keys are baked in at build, so resets don't trigger "host key changed" warnings; `-Rebuild` will. `copycat-ssh` skips host-key checks (the port is loopback-only), so it never warns.
 
 ## Roadmap
 
@@ -115,6 +156,7 @@ Copycat doesn't fake Linux, so some things are out of scope by design:
 - [ ] `copycat-arch` and `copycat-rpm` for other package managers
 - [ ] Isolated (offline) mode via a small gateway
 - [ ] Security-focused labs (recon, web, privilege escalation) against `copycat-target`
+- [ ] Real firewall exercises once an isolated container with `NET_ADMIN` exists
 
 ## Repository layout
 
@@ -125,6 +167,8 @@ Copycat doesn't fake Linux, so some things are out of scope by design:
 | `target/` | Alpine target: Dockerfile, `www/`, `home/` |
 | `seed/generate.sh` | builds the training file tree at image build time |
 | `labs/` | exercise READMEs, copied into the image |
+| `grading/`, `scenarios/` | check and setup scripts for graded labs and troubleshooting scenarios (root-owned in the image, not in `~/labs`) |
+| `tests/` | test-only solutions used by `copycat-selftest` |
 | `scripts/`, `bin/` | lifecycle scripts and Windows launchers |
 
 ## Contributing
