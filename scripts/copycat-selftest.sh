@@ -11,6 +11,7 @@ echo "Copycat self-test"
 check "containers are running"         bash -c "[ \"\$(docker ps -q --filter name=copycat- | wc -l)\" -ge 2 ]"
 check "SSH into copycat-kali as non-root" $K bash -c "sshpass -p copycat ssh $SSHO copycat@localhost 'test \$(id -u) -ne 0'"
 check "banner shown on login"          $K bash -c "grep -q 'COPYCAT COMMAND SANDBOX' /etc/motd && grep -q '^session.*pam_motd' /etc/pam.d/sshd"
+check "login panel runs"               $K bash -c "copycat-panel | grep -q 'labs'"
 check "published on 127.0.0.1:2222 only" bash -c "docker port copycat-kali 22 | grep -q '^127.0.0.1:2222'"
 check "sudo works"                     $K bash -c "echo copycat | sudo -S -p '' true"
 check "seed files exist"               $K test -f /home/copycat/test-data/numbers.txt -a -f /home/copycat/test-data/secret.txt
