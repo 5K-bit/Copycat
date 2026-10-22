@@ -4,9 +4,11 @@
 param([switch]$Rebuild)
 $ErrorActionPreference = 'Stop'
 Set-Location (Split-Path $PSScriptRoot)
-docker compose down --volumes --remove-orphans
-if ($Rebuild) { docker compose build --no-cache }
-docker compose up -d --build --force-recreate
+. "$PSScriptRoot\ui.ps1"
+Show-Banner
+Invoke-Step 'Removing the old lab' { docker compose down --volumes --remove-orphans }
+if ($Rebuild) { Invoke-Step 'Rebuilding images from scratch' { docker compose build --no-cache } }
+Invoke-Step 'Recreating Copycat' { docker compose up -d --build --force-recreate }
 Write-Host @'
 
    /\_/\   ___

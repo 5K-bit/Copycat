@@ -1,2 +1,3 @@
 Set-Location (Split-Path $PSScriptRoot)
-docker compose stop
+. "$PSScriptRoot\ui.ps1"
+Invoke-Step 'Stopping Copycat (your changes are kept)' { docker compose stop }

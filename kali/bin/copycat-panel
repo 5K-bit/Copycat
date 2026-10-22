@@ -1,0 +1,13 @@
+#!/bin/bash
+# Live status shown under the banner at login: lab progress, the other machine, session age.
+. /usr/local/lib/copycat/color.sh
+lab_counts "$HOME/.copycat-progress"
+if timeout 1 bash -c '</dev/tcp/copycat-target/22' 2>/dev/null; then
+  target="${C_GRN}up${C_RST}"
+else
+  target="${C_RED}down${C_RST}"
+fi
+age=$(uptime -p 2>/dev/null || echo "up")
+printf ' %slabs%s     %s%s%s %s/%s\n' "$C_DIM" "$C_RST" "$C_PINK" "$(draw_bar "$LAB_DONE" "$LAB_TOTAL")" "$C_RST" "$LAB_DONE" "$LAB_TOTAL"
+printf ' %smachine%s  copycat-target  %s\n' "$C_DIM" "$C_RST" "$target"
+printf ' %ssession%s  %s\n\n' "$C_DIM" "$C_RST" "$age"
