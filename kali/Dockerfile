@@ -3,17 +3,25 @@ FROM kalilinux/kali-rolling
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Docker base images strip man pages; put them back so `man` is real.
+# The apt step retries as a whole: the http.kali.org redirector sometimes hands out a mirror that
+# is unreachable (seen on CI), and a retry gets fresh mirror picks.
 RUN rm -f /etc/dpkg/dpkg.cfg.d/docker /etc/dpkg/dpkg.cfg.d/excludes \
- && apt-get update \
- && apt-get install -y --no-install-recommends \
-      openssh-server openssh-client sudo init-system-helpers \
-      man-db manpages less nano vim-tiny file tree bc \
-      procps psmisc lsof cron rsyslog plocate \
-      iputils-ping iproute2 net-tools traceroute bind9-dnsutils \
-      curl wget rsync sshpass \
-      zip unzip tar gzip bzip2 xz-utils \
-      bsdextrautils ncal diffutils findutils sqlite3 \
-      git acl e2fsprogs sysstat apt-utils \
+ && for i in 1 2 3 4; do \
+      apt-get update \
+      && apt-get install -y --no-install-recommends -o Acquire::Retries=3 \
+        openssh-server openssh-client sudo init-system-helpers \
+        man-db manpages less nano vim-tiny file tree bc \
+        procps psmisc lsof cron rsyslog plocate \
+        iputils-ping iproute2 net-tools traceroute bind9-dnsutils \
+        curl wget rsync sshpass \
+        zip unzip tar gzip bzip2 xz-utils \
+        bsdextrautils ncal diffutils findutils sqlite3 \
+        git acl e2fsprogs sysstat apt-utils \
+      && break; \
+      [ "$i" = 4 ] && exit 1; \
+      echo "apt failed (attempt $i); retrying, the Kali redirector may pick another mirror"; \
+      sleep 5; \
+    done \
  && apt-get clean && rm -rf /var/lib/apt/lists/* \
  && mandb -q || true
 
