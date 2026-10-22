@@ -21,7 +21,9 @@ Copycat is a two-container Docker Compose project. The design goal is **realism 
 | `copycat-kali` | `kali/` | The learner's shell. Login banner, helper commands (`copycat-*`, `copysay`), seeded home directory and labs. |
 | `copycat-target` | `target/` | A second host to practise ssh, file transfer and HTTP against. Not reachable from the host. |
 | Seed tree | `seed/generate.sh` | Generates the training filesystem at image build so every reset starts identical. |
-| Labs | `labs/` | 20 README exercises copied into `~/labs/` at build. |
+| Labs | `labs/` | 40 README exercises copied into `~/labs/` at build. |
+| Grading | `grading/`, `kali/lib/grade.sh`, `kali/bin/copycat-{setup,check}` | 12 graded labs. Check and setup scripts live root-owned under `/usr/local/lib/copycat/grading/`, outside `~/labs`, so answers aren't on the student's path. Scores are stored in `~/.copycat/progress.db` (SQLite). |
+| Troubleshooting | `scenarios/`, `kali/bin/copycat-trouble` | 8 scenarios that break something real and grade the fix, sharing the same score database. |
 | Lifecycle scripts | `scripts/`, `bin/` | `start`, `stop`, `reset`, `ssh`, `selftest` for PowerShell and POSIX shells. |
 
 ## Lifecycle

@@ -4,6 +4,8 @@ COPYCAT — everything here is real Linux. These helpers only point you around.
 
   copycat-labs     list the labs (exercises live in ~/labs/NN-name/README.md)
   copycat-done NN  mark a lab finished (shows as [x] in copycat-labs)
+  copycat-setup NN, copycat-check NN   graded labs: break it, fix it, get a score
+  copycat-trouble  troubleshooting mode (copycat-trouble list)
   copysay [text]   a cat gives you a tip (or says what you type)
   copycat          reprint the banner
 
