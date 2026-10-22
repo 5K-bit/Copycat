@@ -5,7 +5,7 @@ k="$HOME/.ssh/id_lab29"
 grade_start 29 "SSH AUTHENTICATION"
 
 grade_section "Key pair"
-item "~/.ssh/id_lab29 and id_lab29.pub must exist (ssh-keygen -f ~/.ssh/id_lab29)" test -f "$k" -a -f "$k.pub"
+item "the key files .ssh/id_lab29 and id_lab29.pub must exist in your home folder (ssh-keygen -f)" test -f "$k" -a -f "$k.pub"
 item "the key must be ed25519 or RSA of at least 3072 bits" bash -c "ssh-keygen -l -f '$k.pub' | grep -Eq '(ED25519|RSA)' && ssh-keygen -l -f '$k.pub' | awk '{ if (\$4 ~ /ED25519/ || \$1 >= 3072) ok=1 } END { exit !ok }'"
 
 grade_section "Key permissions"

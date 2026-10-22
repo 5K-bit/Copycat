@@ -1,3 +1,4 @@
+#!/bin/bash
 # Solution for lab 24 (run as root by the self-test only).
 d=/srv/lab24
 chgrp developers "$d/shared"; chmod 3770 "$d/shared"

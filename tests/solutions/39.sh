@@ -1,3 +1,4 @@
+#!/bin/bash
 d=/srv/hardening
 chmod 644 "$d/app.conf"
 chmod 755 "$d/viewer"

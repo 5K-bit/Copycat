@@ -1,3 +1,4 @@
+#!/bin/bash
 cat > /home/copycat/labs/33-firewall/rules.txt <<'RULES'
 -P INPUT DROP
 -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT

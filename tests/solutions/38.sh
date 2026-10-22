@@ -1,3 +1,4 @@
+#!/bin/bash
 cat > /home/copycat/labs/38-bash-automation/logsummary.sh <<'SCRIPT'
 #!/bin/bash
 usage() { echo "usage: $0 FILE..." >&2; exit 2; }

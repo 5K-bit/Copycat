@@ -1,3 +1,4 @@
+#!/bin/bash
 d=/home/copycat/labs/40-system-recovery/app
 chmod 755 "$d/bin/run.sh"
 ln -sfn releases/v1 "$d/current"
