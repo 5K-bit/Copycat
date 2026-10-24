@@ -1,26 +1,15 @@
 <div align="center">
 
-```
-    /\_/\            /\_/\
-   ( o.o )  ══════▶ ( o.o )
-    > ^ <            > ^ <
-
- ██████╗ ██████╗ ██████╗ ██╗   ██╗ ██████╗ █████╗ ████████╗
-██╔════╝██╔═══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗╚══██╔══╝
-██║     ██║   ██║██████╔╝ ╚████╔╝ ██║     ███████║   ██║
-██║     ██║   ██║██╔═══╝   ╚██╔╝  ██║     ██╔══██║   ██║
-╚██████╗╚██████╔╝██║        ██║   ╚██████╗██║  ██║   ██║
- ╚═════╝ ╚═════╝ ╚═╝        ╚═╝    ╚═════╝╚═╝  ╚═╝   ╚═╝
-```
+<img src="assets/logo.svg" alt="Copycat" width="640">
 
 **A real Linux command sandbox. SSH in, break things, reset in one command.**
 
-[![CI](https://github.com/5K-bit/Copycat/actions/workflows/ci.yml/badge.svg)](https://github.com/5K-bit/Copycat/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-![Docker](https://img.shields.io/badge/docker-compose-2496ED?logo=docker&logoColor=white)
-![Kali Linux](https://img.shields.io/badge/kali-rolling-557C94?logo=kalilinux&logoColor=white)
-![Shell](https://img.shields.io/badge/shell-bash-4EAA25?logo=gnubash&logoColor=white)
-![Labs](https://img.shields.io/badge/labs-40-ff69b4)
+[![CI](https://img.shields.io/github/actions/workflow/status/5K-bit/Copycat/ci.yml?branch=main&style=for-the-badge&label=CI&labelColor=1b1230&color=ff87ff)](https://github.com/5K-bit/Copycat/actions/workflows/ci.yml)
+![Labs](https://img.shields.io/badge/labs-40-ff87ff?style=for-the-badge&labelColor=1b1230)
+![Graded](https://img.shields.io/badge/graded-12-5fd7ff?style=for-the-badge&labelColor=1b1230)
+![Docker](https://img.shields.io/badge/docker-compose-2f7bff?style=for-the-badge&logo=docker&logoColor=white&labelColor=1b1230)
+![Kali](https://img.shields.io/badge/kali-rolling-557C94?style=for-the-badge&logo=kalilinux&logoColor=white&labelColor=1b1230)
+[![License: MIT](https://img.shields.io/badge/license-MIT-9fb0d0?style=for-the-badge&labelColor=1b1230)](LICENSE)
 
 </div>
 
