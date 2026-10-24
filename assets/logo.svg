@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 240" role="img" aria-labelledby="t d">
+  <title id="t">Copycat</title>
+  <desc id="d">Copycat logo: a pink cat face above a terminal prompt, next to the word Copycat.</desc>
+  <defs>
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff87ff"/>
+      <stop offset="0.55" stop-color="#5fd7ff"/>
+      <stop offset="1" stop-color="#2f7bff"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1230"/>
+      <stop offset="1" stop-color="#0b1020"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="880" height="240" rx="28" fill="url(#bg)"/>
+  <rect x="1.5" y="1.5" width="877" height="237" rx="26.5" fill="none" stroke="#ff87ff" stroke-opacity="0.35" stroke-width="3"/>
+
+  <!-- mark: cat face -->
+  <g transform="translate(40 40)">
+    <rect width="160" height="160" rx="36" fill="#120a24" stroke="#ff87ff" stroke-width="4"/>
+    <g transform="translate(0 -10)">
+    <path d="M36 118 V58 L58 78 Q80 70 102 78 L124 58 V118 Q124 132 80 132 Q36 132 36 118 Z"
+          fill="#ff87ff"/>
+    <ellipse cx="62" cy="96" rx="8" ry="11" fill="#120a24"/>
+    <ellipse cx="98" cy="96" rx="8" ry="11" fill="#120a24"/>
+    <path d="M74 110 L86 110 L80 118 Z" fill="#120a24"/>
+    <path d="M80 118 Q73 126 66 122 M80 118 Q87 126 94 122" fill="none" stroke="#120a24" stroke-width="3" stroke-linecap="round"/>
+    <path d="M26 100 H44 M26 112 H44 M136 100 H116 M136 112 H116" stroke="#5fd7ff" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- wordmark -->
+  <text x="238" y="140" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+        font-size="96" font-weight="700" letter-spacing="2" fill="url(#word)">Copycat</text>
+  <text x="242" y="188" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+        font-size="26" fill="#9fb0d0">$ ssh in. break things. reset.<tspan fill="#ff87ff">_</tspan></text>
+</svg>
