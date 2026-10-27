@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-labelledby="title desc">
+<title id="title">Copycat — Linux practice through real commands</title><desc id="desc">Explore. Troubleshoot. Reset. Repeat. A Blackfong project.</desc>
+<defs><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity=".035"/></pattern></defs>
+<rect width="1200" height="400" rx="18" fill="#0c1220"/><rect width="1200" height="400" rx="18" fill="url(#grid)"/>
+<path d="M48 40h42" stroke="#ff87ff" stroke-width="5"/>
+<text x="106" y="46" fill="#c5cddb" font-family="Arial, sans-serif" font-size="16" letter-spacing="3">BLACKFONG / PROJECTS</text>
+<text x="48" y="114" fill="#ff87ff" font-family="Arial, sans-serif" font-size="16" letter-spacing="3">LEARNING / 07</text>
+<text x="45" y="194" fill="#f3f5fa" font-family="Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="-2">Copycat</text>
+<text x="48" y="247" fill="#e0e6ef" font-family="Arial, sans-serif" font-size="25">Linux practice through real commands</text>
+<text x="48" y="285" fill="#99a7bc" font-family="Arial, sans-serif" font-size="21">Explore. Troubleshoot. Reset. Repeat.</text>
+<path d="M48 331h1104" stroke="#283345"/>
+<text x="48" y="366" fill="#99a7bc" font-family="Arial, sans-serif" font-size="15" letter-spacing="2">LOCAL SYSTEMS. CLEAR PURPOSE.</text>
+<text x="1106" y="366" fill="#ff87ff" font-family="Arial, sans-serif" font-size="17" font-weight="700">5K</text>
+<g transform="translate(905 76)" fill="none" stroke="#ff87ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M48 180V60l40 32q32-16 64 0l40-32v120q-72 36-144 0Z"/><path d="M78 128h12m60 0h12m-48 30h12l-6 10M20 150h40m120 0h40M20 170h40m120 0h40"/></g>
+</svg>
