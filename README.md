@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo.svg" alt="Copycat" width="640">
+<img src="assets/brand/github-banner.svg" alt="Copycat — Linux practice through real commands" width="1200">
 
 **A real Linux command sandbox. SSH in, break things, reset in one command.**
 
@@ -12,6 +12,8 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-9fb0d0?style=for-the-badge&labelColor=1b1230)](LICENSE)
 
 </div>
+
+[Quick start](#quick-start) · [Labs](#labs) · [Troubleshooting mode](#troubleshooting-mode)
 
 ---
 
