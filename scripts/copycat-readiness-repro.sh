@@ -8,6 +8,7 @@
 #   scripts/copycat-readiness-repro.sh                 # 20 runs, no wait
 #   scripts/copycat-readiness-repro.sh -n 30           # 30 runs
 #   scripts/copycat-readiness-repro.sh --wait-ssh      # control: wait for sshd/cron/rsyslog first
+#   scripts/copycat-readiness-repro.sh --wait-healthy  # start with `up -d --wait` (compose healthchecks), as CI does
 #   scripts/copycat-readiness-repro.sh -o DIR -y       # custom results dir, skip the safety prompt
 #
 # WARNING: destroys and recreates the copycat containers (same as copycat-reset).
@@ -17,11 +18,12 @@ export MSYS_NO_PATHCONV=1   # Git Bash must not rewrite /home/... arguments to d
 
 RUNS=20
 WAIT_SSH=0
+WAIT_HEALTHY=0
 OUT=""
 YES=0
 
 usage() {
-  sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 while [ $# -gt 0 ]; do
@@ -29,6 +31,7 @@ while [ $# -gt 0 ]; do
     -n|--runs)  RUNS="${2:-}"; shift 2 || { usage >&2; exit 2; } ;;
     -o|--out)   OUT="${2:-}"; shift 2 || { usage >&2; exit 2; } ;;
     --wait-ssh) WAIT_SSH=1; shift ;;
+    --wait-healthy) WAIT_HEALTHY=1; shift ;;
     -y|--yes)   YES=1; shift ;;
     -h|--help)  usage; exit 0 ;;
     *)          echo "unknown option: $1" >&2; usage >&2; exit 2 ;;
@@ -39,7 +42,9 @@ case "$RUNS" in ''|*[!0-9]*|0) echo "--runs must be a positive integer" >&2; exi
 command -v docker >/dev/null 2>&1 || { echo "docker not found" >&2; exit 2; }
 docker info >/dev/null 2>&1 || { echo "docker daemon not reachable" >&2; exit 2; }
 
-if [ "$WAIT_SSH" -eq 1 ]; then mode="wait"; else mode="nowait"; fi
+if [ "$WAIT_HEALTHY" -eq 1 ]; then mode="wait-healthy"
+elif [ "$WAIT_SSH" -eq 1 ]; then mode="wait-ssh"
+else mode="nowait"; fi
 [ -n "$OUT" ] || OUT="readiness-results/$(date -u +%Y%m%dT%H%M%SZ)-$mode"
 mkdir -p "$OUT" || exit 2
 
@@ -75,7 +80,9 @@ passed=0; failed=0
 for i in $(seq 1 "$RUNS"); do
   tag=$(printf '%03d' "$i")
   teardown
-  if ! docker compose up -d >"$OUT/run-$tag.up.log" 2>&1; then
+  up_args="-d"; [ "$WAIT_HEALTHY" -eq 1 ] && up_args="-d --wait --wait-timeout 180"
+  # shellcheck disable=SC2086  # intentional word splitting of the flag list
+  if ! docker compose up $up_args >"$OUT/run-$tag.up.log" 2>&1; then
     echo "run $tag: UP-FAILED"
     docker compose logs --no-color >"$OUT/run-$tag.containers.log" 2>&1
     echo "$i,up-failed,0,,\"compose up failed\"" >>"$OUT/summary.csv"
@@ -119,7 +126,7 @@ fi
   echo
   echo "- Date (UTC): $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "- Commit: $(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
-  echo "- Mode: $mode (selftest started $([ "$WAIT_SSH" -eq 1 ] && echo 'after sshd/cron/rsyslog were running' || echo 'immediately after compose up'))"
+  echo "- Mode: $mode (selftest started $(case "$mode" in wait-healthy) echo 'after compose up --wait reported healthy';; wait-ssh) echo 'after sshd/cron/rsyslog were running';; *) echo 'immediately after compose up -d';; esac))"
   echo "- Host: $(uname -srm)"
   echo "- Docker: $(docker version --format '{{.Server.Version}}' 2>/dev/null || echo unknown)"
   echo "- Runs: $total, passed: $passed, failed: $failed"
