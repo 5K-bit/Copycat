@@ -28,6 +28,10 @@ Measured on 2026-10-29. Each run took about 150 seconds, almost all of it the se
   target: sshd and HTTP), and kali waits for target to be healthy. This makes `--wait` meaningful. It was not
   needed to make the 20 runs above pass.
 
+CI evidence: the new `selftest` job passed on its first run on a GitHub-hosted runner
+([run 40999445464](https://github.com/5K-bit/Copycat/actions/runs/40999445464)), which also covers the
+GitHub-runner gap in the local measurement above.
+
 ## Reproduce
 
 ```bash

@@ -178,7 +178,7 @@ Copycat doesn't fake Linux, so some things are out of scope by design:
 
 **Implementation.** The `selftest` job in [`.github/workflows/ci.yml`](.github/workflows/ci.yml), healthchecks in `kali/Dockerfile` and `target/Dockerfile`, and `depends_on: condition: service_healthy` in `compose.yaml`.
 
-**Verification.** The reproduction script, 20 passing runs before and after the change, and the CI job itself.
+**Verification.** The reproduction script, 20 passing runs before and after the change, and the CI job itself: its first run on [PR #8](https://github.com/5K-bit/Copycat/pull/8) passed lint, build and selftest ([run 40999445464](https://github.com/5K-bit/Copycat/actions/runs/40999445464)).
 
 **Remaining limits.** The 20-run measurement is from one Windows and Docker Desktop host, not a GitHub runner. A race that needs a slower machine would not show up there. The selftest takes about 2.5 minutes on that host, which CI now pays on every run.
 
