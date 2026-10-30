@@ -18,4 +18,7 @@ RUN echo '[ -r /etc/profile.d/copycat.sh ] && . /etc/profile.d/copycat.sh' > /ho
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 EXPOSE 22 80
+# Healthy only when both sshd and the HTTP server answer.
+HEALTHCHECK --interval=5s --timeout=3s --start-period=10s --retries=10 \
+  CMD ["bash", "-c", "</dev/tcp/127.0.0.1/22 && curl -fsS -o /dev/null http://127.0.0.1/files/numbers.txt"]
 ENTRYPOINT ["/entrypoint.sh"]
