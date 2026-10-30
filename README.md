@@ -162,6 +162,31 @@ Copycat doesn't fake Linux, so some things are out of scope by design:
 | `tests/` | test-only solutions used by `copycat-selftest` |
 | `scripts/`, `bin/` | lifecycle scripts and Windows launchers |
 
+## Verification
+
+- `copycat-selftest` checks the running environment end to end (services, networking, graded labs, troubleshooting scenarios, safety settings).
+- CI runs shellcheck and `compose config`, builds the images, then starts the containers, waits for the healthchecks and runs the selftest on every pull request and push to `main`. On failure it uploads container logs and health state as an artifact, and it always cleans up.
+- Startup readiness evidence, including the reproduction method and what was and was not observed: [docs/READINESS-EVIDENCE.md](docs/READINESS-EVIDENCE.md).
+
+## Ownership
+
+**Problem.** CI proved the images build, not that the lab works. A broken service, a bad seed or a startup ordering problem would have passed CI.
+
+**Evidence.** CI ran `docker compose build` only. I suspected a startup race, so I wrote [`scripts/copycat-readiness-repro.sh`](scripts/copycat-readiness-repro.sh) and ran the selftest right after `compose up` 20 times. All 20 passed, so no race was observed; the confirmed gap was that CI never ran the selftest ([evidence](docs/READINESS-EVIDENCE.md)).
+
+**Decision.** Run the existing selftest in CI instead of writing a second, smaller check. Add real healthchecks and wait on them, so CI does not depend on timing. I did not call the problem a race, because it was not reproduced.
+
+**Implementation.** The `selftest` job in [`.github/workflows/ci.yml`](.github/workflows/ci.yml), healthchecks in `kali/Dockerfile` and `target/Dockerfile`, and `depends_on: condition: service_healthy` in `compose.yaml`.
+
+**Verification.** The reproduction script, 20 passing runs before and after the change, and the CI job itself.
+
+**Remaining limits.** The 20-run measurement is from one Windows and Docker Desktop host, not a GitHub runner. A race that needs a slower machine would not show up there. The selftest takes about 2.5 minutes,.
+
+## Development practice
+
+AI tools assist with implementation, debugging, tests, and documentation.
+Louis Boddie owns project direction and acceptance decisions; linked tests and release evidence document what has been verified.
+
 ## Contributing
 
 Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
