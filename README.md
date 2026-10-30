@@ -180,7 +180,7 @@ Copycat doesn't fake Linux, so some things are out of scope by design:
 
 **Verification.** The reproduction script, 20 passing runs before and after the change, and the CI job itself.
 
-**Remaining limits.** The 20-run measurement is from one Windows and Docker Desktop host, not a GitHub runner. A race that needs a slower machine would not show up there. The selftest takes about 2.5 minutes,.
+**Remaining limits.** The 20-run measurement is from one Windows and Docker Desktop host, not a GitHub runner. A race that needs a slower machine would not show up there. The selftest takes about 2.5 minutes on that host, which CI now pays on every run.
 
 ## Development practice
 
