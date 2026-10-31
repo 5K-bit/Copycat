@@ -91,5 +91,8 @@ COPY kali/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 22
-HEALTHCHECK --interval=10s --timeout=3s --retries=5 CMD bash -c '</dev/tcp/127.0.0.1/22' || exit 1
+# Healthy only once the whole entrypoint has run: sshd accepting connections, cron and rsyslog up,
+# and the seeded busywork process started (it is the last thing the entrypoint launches).
+HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --retries=12 \
+  CMD ["bash", "-c", "</dev/tcp/127.0.0.1/22 && pgrep -x cron >/dev/null && pgrep -x rsyslogd >/dev/null && pgrep -f '[b]usywork' >/dev/null"]
 ENTRYPOINT ["/entrypoint.sh"]

@@ -15,7 +15,9 @@ services:
     ports:
       - "127.0.0.1:2222:22"      # loopback only: reachable from this PC, not your LAN
     networks: [copycat-net]
-    depends_on: [target]
+    depends_on:
+      target:
+        condition: service_healthy   # kali's checks and labs reach the target, so wait until it answers
     pids_limit: 512              # fork bombs stay inside the box
     mem_limit: 1g
     cpus: 1.0
