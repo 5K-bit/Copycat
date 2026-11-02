@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="t">
+  <title id="t">Copycat icon</title>
+  <rect width="256" height="256" rx="56" fill="#0c1220"/>
+  <rect x="6" y="6" width="244" height="244" rx="50" fill="none" stroke="#ff87ff" stroke-opacity=".35" stroke-width="4"/>
+  <g transform="translate(39.20 32.54) scale(0.7400)" fill="none" stroke="#ff87ff" stroke-width="13.51" stroke-linecap="round" stroke-linejoin="round"><path d="M48 180V60l40 32q32-16 64 0l40-32v120q-72 36-144 0Z"/><path d="M78 128h12m60 0h12m-48 30h12l-6 10M20 150h40m120 0h40M20 170h40m120 0h40"/></g>
+</svg>
